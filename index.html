@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Temperaturas IoT</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  databaseURL: "https://TU_PROYECTO.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+function updateTemp(id, value) {
+  const el = document.getElementById(id);
+  el.innerText = value.toFixed(2) + " °C";
+
+  if (value < 20) el.className = "text-blue-400 text-3xl font-bold";
+  else if (value < 30) el.className = "text-green-400 text-3xl font-bold";
+  else el.className = "text-red-400 text-3xl font-bold";
+}
+
+onValue(ref(db, "sensores"), (snap) => {
+  let data = snap.val();
+  if(!data) return;
+
+  updateTemp("t1", data.temperatura1);
+  updateTemp("t2", data.temperatura2);
+  updateTemp("t3", data.temperatura3);
+  updateTemp("t4", data.temperatura4);
+});
+</script>
+</head>
+
+<body class="bg-slate-900 text-white p-6">
+<h1 class="text-center text-3xl font-bold mb-6">Temperaturas en Tiempo Real</h1>
+
+<div class="grid grid-cols-2 gap-6 max-w-xl mx-auto">
+
+  <div class="bg-slate-800 p-6 rounded-xl text-center">
+    <h2 class="text-sm text-slate-400 mb-2">Sensor 1</h2>
+    <div id="t1" class="text-3xl font-bold">-- °C</div>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-xl text-center">
+    <h2 class="text-sm text-slate-400 mb-2">Sensor 2</h2>
+    <div id="t2" class="text-3xl font-bold">-- °C</div>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-xl text-center">
+    <h2 class="text-sm text-slate-400 mb-2">Sensor 3</h2>
+    <div id="t3" class="text-3xl font-bold">-- °C</div>
+  </div>
+
+  <div class="bg-slate-800 p-6 rounded-xl text-center">
+    <h2 class="text-sm text-slate-400 mb-2">Sensor 4</h2>
+    <div id="t4" class="text-3xl font-bold">-- °C</div>
+  </div>
+
+</div>
+
+</body>
+</html>
